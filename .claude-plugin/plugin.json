@@ -4,7 +4,7 @@
   "description": "Custom skills for dr.eamer.dev development workflows - session management, quality audits, UX design, data visualization, and service orchestration",
   "version": "1.2.0",
   "author": "Luke Steuber",
-  "repository": "https://github.com/lukesteuber/dreamer-skills",
+  "repository": "https://github.com/lukeslp/dreamer-skills",
   "keywords": ["workflow", "session-management", "quality", "ux", "datavis", "services"],
   "skills": [
     "skills/session-start/SKILL.md",
