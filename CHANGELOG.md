@@ -2,6 +2,16 @@
 
 All notable changes to dreamer-skills will be documented in this file.
 
+## [1.2.1] - 2026-01-14
+
+### Added
+- `/datavis` skill - Technical D3.js visualization patterns (complements `/data-artist` philosophy)
+  - Scale selection guide (linear, log, sqrt)
+  - Colorblind-safe palettes
+  - Force simulation patterns
+  - Touch-friendly responsive SVG
+  - Data pipeline structure
+
 ## [1.2.0] - 2026-01-13
 
 ### Changed
