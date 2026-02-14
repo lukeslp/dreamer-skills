@@ -1,163 +1,74 @@
 ---
 name: quality-audit
-description: Comprehensive quality audit running a11y, performance, security, and dependency agents in parallel for production readiness.
-version: 1.0.0
+description: "Code quality auditing skill that runs real analysis tools in the sandbox. Use when: auditing a codebase for security vulnerabilities, checking dependency health, scanning for accessibility issues, measuring performance, running linters, or generating a comprehensive quality report for a project."
 ---
 
 # Quality Audit
 
-You are performing a comprehensive quality audit of the current project. This is a thorough review that examines accessibility, performance, security, and dependencies to ensure production readiness.
+Run real quality analysis tools against a codebase and produce actionable reports. Unlike guideline-only approaches, this skill installs and executes actual tools (npm audit, bandit, eslint, ruff, etc.) in the Manus sandbox and reports real findings.
 
-## Quality Domains
+## Quick Start
 
-The audit covers four critical domains:
-
-### 1. Accessibility (@geepers_a11y)
-- WCAG 2.1 AA compliance
-- Keyboard navigation
-- Screen reader compatibility
-- Color contrast ratios
-- Focus management
-- ARIA usage
-
-### 2. Performance (@geepers_perf)
-- Response time analysis
-- Memory usage profiling
-- CPU utilization
-- Database query optimization
-- Bundle size analysis
-- Loading performance
-
-### 3. Security (@geepers_security)
-- Vulnerability scanning
-- Dependency audit
-- Secret exposure check
-- OWASP top 10 review
-- Input validation
-- Authentication/authorization
-
-### 4. Dependencies (@geepers_deps)
-- Outdated packages
-- Security vulnerabilities (CVEs)
-- License compliance
-- Unused dependencies
-- Version conflicts
-
-## Execution Strategy
-
-**Launch all four agents in PARALLEL** using Task tool:
-
-```
-Launch simultaneously:
-1. @geepers_a11y - Accessibility audit
-2. @geepers_perf - Performance profiling
-3. @geepers_security - Security review
-4. @geepers_deps - Dependency audit
+### Full audit (all domains)
+```bash
+bash /home/ubuntu/skills/quality-audit/scripts/audit.sh /path/to/project
 ```
 
-This parallel execution significantly reduces total audit time.
-
-## Output Format
-
-```
-📋 QUALITY AUDIT REPORT
-
-Project: {name}
-Date: {timestamp}
-Auditor: geepers_orchestrator_quality
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                SUMMARY
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Overall Grade: [A-F]
-
-♿ Accessibility:  [PASS/WARN/FAIL] - {score}%
-⚡ Performance:    [PASS/WARN/FAIL] - {score}%
-🔒 Security:       [PASS/WARN/FAIL] - {score}%
-📦 Dependencies:   [PASS/WARN/FAIL] - {score}%
-
-Production Ready: [YES/NO/CONDITIONAL]
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-            CRITICAL ISSUES
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🔴 {count} Critical Issues:
-1. [SECURITY] {description}
-2. [A11Y] {description}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-             WARNINGS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🟡 {count} Warnings:
-1. [PERF] {description}
-2. [DEPS] {description}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-      DOMAIN-SPECIFIC REPORTS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-[Detailed findings from each agent]
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-         RECOMMENDATIONS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Immediate (Block Release):
-1. {fix required before deployment}
-
-Short-term (This Week):
-1. {important improvement}
-
-Long-term (Tech Debt):
-1. {architectural consideration}
+### Single domain
+```bash
+bash /home/ubuntu/skills/quality-audit/scripts/audit.sh /path/to/project --domain security
+bash /home/ubuntu/skills/quality-audit/scripts/audit.sh /path/to/project --domain deps
+bash /home/ubuntu/skills/quality-audit/scripts/audit.sh /path/to/project --domain perf
+bash /home/ubuntu/skills/quality-audit/scripts/audit.sh /path/to/project --domain a11y
 ```
 
-## When to Run Quality Audit
+Reports are saved to `<project>/.audit-reports/` as JSON files for programmatic use.
 
-- **Pre-release** - Before any production deployment
-- **Pre-PR** - Before creating significant pull requests
-- **Periodic** - Monthly for maintained projects
-- **After major features** - Ensure new code meets standards
-- **Post-incident** - After fixing production issues
+## Audit Domains
 
-## Quality Thresholds
+| Domain | What It Checks | Tools Used |
+|--------|---------------|------------|
+| deps | Vulnerable dependencies, outdated packages | npm audit, pip-audit |
+| security | Exposed secrets, dangerous patterns, code vulnerabilities | bandit, grep patterns, .gitignore checks |
+| perf | Bundle size, large files, heavy dependencies | du, find, bundle analysis |
+| a11y | Alt text, lang attributes, viewport, heading hierarchy | HTML pattern scanning |
 
-| Domain | Pass | Warn | Fail |
-|--------|------|------|------|
-| Accessibility | ≥90% | 70-89% | <70% |
-| Performance | p95 <500ms | <1s | >1s |
-| Security | 0 critical | 0 high | any critical |
-| Dependencies | 0 CVE high+ | <3 medium | any high+ |
+## Workflow
 
-## Alternative: Quick Quality Check
+### 1. Detect Project Type
 
-For faster but less thorough checks, use individual agents:
-- `/scout` - General health (includes some quality signals)
-- Direct agent: `@geepers_a11y` - A11y only
-- Direct agent: `@geepers_perf` - Performance only
+The audit script auto-detects the project type from manifest files:
 
-## Key Principles
+| File Found | Detected Type | Tools Available |
+|------------|--------------|-----------------|
+| package.json | Node.js | npm audit, eslint, tsc |
+| requirements.txt / pyproject.toml | Python | pip-audit, bandit, ruff, mypy |
+| Cargo.toml | Rust | cargo audit, clippy |
+| go.mod | Go | govulncheck |
 
-1. **Parallel execution** - All agents run simultaneously
-2. **Comprehensive coverage** - All four quality domains
-3. **Actionable output** - Clear pass/fail with fixes
-4. **Prioritized findings** - Critical before warnings
-5. **Production focus** - Is this deployable?
+### 2. Run Audit
 
-## Integration with CI/CD
+The script installs missing tools automatically (using `sudo pip3 install` or `npx`), runs each tool, and saves structured output to `.audit-reports/`.
 
-Quality audit findings can inform:
-- Deployment gates (block on critical)
-- PR review requirements
-- Technical debt tracking
-- Sprint planning (remediation work)
+### 3. Interpret Results
 
-## Related Skills
+After running the audit script, read the JSON reports for detailed findings. The console output provides a summary with color-coded PASS/WARN/FAIL indicators.
 
-- `/scout` - Quick health check that includes some quality signals
-- `/ux-journey` - Includes accessibility as part of broader UX audit
-- `/session-start` - May trigger quality checks during startup
-- `/session-end` - Documents quality status in session checkpoint
+### 4. Prioritize Fixes
+
+Triage findings by severity:
+
+| Priority | Category | Action |
+|----------|----------|--------|
+| Critical | Exposed secrets, known CVEs | Fix immediately |
+| High | Security vulnerabilities, XSS risks | Fix before deploy |
+| Medium | Outdated dependencies, missing a11y | Fix in next sprint |
+| Low | Code style, minor warnings | Fix opportunistically |
+
+## Advanced Tools
+
+For deeper analysis beyond the basic audit script, see `references/tools.md` for tool-specific commands covering linting, type checking, test coverage, bundle analysis, license compliance, and more.
+
+## Parallel Audits
+
+For large projects or monorepos, combine with the `swarm` skill to audit multiple packages in parallel. Each subtask can run the audit script on a different package and return structured results for comparison.

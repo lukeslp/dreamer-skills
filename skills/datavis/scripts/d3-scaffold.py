@@ -810,7 +810,326 @@ d3.select('#reset').on('click', () => {
     update(years[0]);
 });"""
     },
+    'bubble-chart': {
+        'title': 'Multi-Dimensional Bubble Chart',
+        'description': '3-variable analysis (x, y, size) using Chart.js',
+        'instructions': 'Hover over bubbles for detailed metrics.',
+        'extra_scripts': '    <script src="https://cdn.jsdelivr.net/npm/chart.js@3"></script>',
+        'css': BASE_CSS + """
+        .chart-container {
+            position: relative;
+            height: 600px;
+            width: 100%;
+        }
+        """,
+        'js': """
+// Sample data
+const datasets = [
+    {
+        label: 'Region A',
+        data: [
+            { x: 20, y: 30, r: 15 },
+            { x: 40, y: 10, r: 10 },
+            { x: 25, y: 20, r: 20 }
+        ]
+    },
+    {
+        label: 'Region B',
+        data: [
+            { x: 30, y: 25, r: 25 },
+            { x: 15, y: 35, r: 12 }
+        ]
+    }
+];
+
+const ctx = document.createElement('canvas');
+document.getElementById('visualization').appendChild(ctx);
+ctx.style.width = '100%';
+ctx.style.height = '100%';
+
+// Chart.js Configuration
+new Chart(ctx, {
+    type: 'bubble',
+    data: {
+        datasets: datasets.map((ds, i) => ({
+            label: ds.label,
+            data: ds.data,
+            backgroundColor: `hsla(${i * 137.5 % 360}, 70%, 50%, 0.6)`,
+            borderColor: `hsl(${i * 137.5 % 360}, 70%, 50%)`,
+            borderWidth: 1
+        }))
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Market Analysis (Income vs Growth vs Size)'
+            },
+            tooltip: {
+                callbacks: {
+                    label: (ctx) => {
+                        const point = ctx.raw;
+                        return `${ctx.dataset.label}: (${point.x}, ${point.y}, ${point.r})`;
+                    }
+                }
+            }
+        },
+        scales: {
+            x: { title: { display: true, text: 'Income ($k)' } },
+            y: { title: { display: true, text: 'Growth (%)' } }
+        }
+    }
+});
+"""
+    },
+
+    'radial-tree': {
+        'title': 'Radial Hierarchy Tree',
+        'description': 'Circular tree layout for deep hierarchies',
+        'instructions': 'Scroll to zoom. Drag to pan. Hover for details.',
+        'extra_scripts': '<script src="https://d3js.org/d3.v7.min.js"></script>',
+        'css': BASE_CSS + """
+        #visualization {
+            height: 800px;
+            background: #111;
+            color: #eee;
+        }
+        .node circle {
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .node text {
+            font-family: 'Helvetica Neue', sans-serif;
+            fill: #ccc;
+            font-size: 10px;
+            pointer-events: none;
+            text-shadow: 0 1px 4px #000;
+        }
+        .link {
+            fill: none;
+            stroke: #555;
+            stroke-opacity: 0.4;
+            stroke-width: 1.5px;
+        }
+        """,
+        'js': """
+// Sample Hierarchy Data
+const data = {
+  name: "Flare",
+  children: [
+    {
+      name: "Analytics",
+      children: [
+        {name: "Cluster", value: 3938},
+        {name: "Graph", value: 3534},
+        {name: "Optimization", value: 7074}
+      ]
+    },
+    {
+      name: "Animate",
+      children: [
+        {name: "Easing", value: 17010},
+        {name: "Function", value: 5842},
+        {name: "Interpolate", value: 8746}
+      ]
+    },
+    {
+      name: "Display",
+      children: [
+        {name: "DirtySprite", value: 8833},
+        {name: "LineSprite", value: 1732},
+        {name: "RectSprite", value: 3623}
+      ]
+    }
+  ]
+};
+
+const width = 800;
+const height = 800;
+const radius = width / 2;
+
+const svg = d3.select("#visualization")
+  .append("svg")
+  .attr("viewBox", `0 0 ${width} ${height}`)
+  .style("width", "100%")
+  .style("height", "auto")
+  .style("font", "10px sans-serif");
+
+const g = svg.append("g")
+  .attr("transform", `translate(${width/2},${height/2})`);
+
+const root = d3.hierarchy(data);
+const tree = d3.tree()
+    .size([2 * Math.PI, radius - 100])
+    .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
+
+tree(root);
+
+// Links
+g.append("g")
+  .attr("fill", "none")
+  .attr("stroke", "#555")
+  .attr("stroke-opacity", 0.4)
+  .attr("stroke-width", 1.5)
+.selectAll("path")
+  .data(root.links())
+  .join("path")
+  .attr("d", d3.linkRadial()
+      .angle(d => d.x)
+      .radius(d => d.y));
+
+// Nodes
+const node = g.append("g")
+.selectAll("a")
+.data(root.descendants())
+.join("a")
+  .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`);
+
+node.append("circle")
+  .attr("fill", d => d.children ? "#555" : "#999")
+  .attr("r", 2.5);
+
+node.append("text")
+  .attr("dy", "0.31em")
+  .attr("x", d => d.x < Math.PI === !d.children ? 6 : -6)
+  .attr("text-anchor", d => d.x < Math.PI === !d.children ? "start" : "end")
+  .attr("transform", d => d.x >= Math.PI ? "rotate(180)" : null)
+  .text(d => d.data.name)
+  .clone(true).lower()
+  .attr("stroke", "black");
+
+// Zoom
+const zoom = d3.zoom().on("zoom", e => {
+    g.attr("transform", `translate(${width/2},${height/2}) ${e.transform}`);
+});
+svg.call(zoom);
+"""
+    },
+
+    'sankey': {
+        'title': 'Sankey Flow Diagram',
+        'description': 'Visualize flows, transfers, and process steps',
+        'instructions': 'Hover links to see flow volume.',
+        'extra_scripts': """
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+        """,
+        'css': BASE_CSS + """
+        .link {
+            fill: none;
+            stroke-opacity: 0.5;
+            transition: stroke-opacity 0.2s;
+        }
+        .link:hover {
+            stroke-opacity: 0.8;
+        }
+        .node rect {
+            fill-opacity: 0.9;
+            shape-rendering: crispEdges;
+        }
+        .node text {
+            text-shadow: 0 1px 0 #fff;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        """,
+        'js': """
+// Sample Flow Data
+const data = {
+  nodes: [
+    {name: "Agricultural Waste"}, {name: "Bio-conversion"}, 
+    {name: "Liquid"}, {name: "Losses"}, 
+    {name: "Solid"}, {name: "Gas"},
+    {name: "Biofuel User"}, {name: "Chemical Plant"}
+  ],
+  links: [
+    {source: 0, target: 1, value: 124.729},
+    {source: 1, target: 2, value: 0.597},
+    {source: 1, target: 3, value: 26.862},
+    {source: 1, target: 4, value: 280.122},
+    {source: 1, target: 5, value: 81.144},
+    {source: 2, target: 6, value: 35.1},
+    {source: 5, target: 7, value: 12.3},
+    {source: 4, target: 7, value: 20.0}
+  ]
+};
+
+const width = 900;
+const height = 600;
+
+const svg = d3.select("#visualization").append("svg")
+    .attr("viewBox", `0 0 ${width} ${height}`)
+    .style("width", "100%")
+    .style("height", "auto");
+
+const sankey = d3.sankey()
+    .nodeWidth(15)
+    .nodePadding(10)
+    .extent([[1, 5], [width - 1, height - 5]]);
+
+const {nodes, links} = sankey(data);
+
+// Color scale
+const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+// Draw nodes
+svg.append("g")
+  .selectAll("rect")
+  .data(nodes)
+  .join("rect")
+    .attr("x", d => d.x0)
+    .attr("y", d => d.y0)
+    .attr("height", d => d.y1 - d.y0)
+    .attr("width", d => d.x1 - d.x0)
+    .attr("fill", d => color(d.name))
+  .append("title")
+    .text(d => `${d.name}\\n${d.value.toLocaleString()}`);
+
+// Draw links
+const link = svg.append("g")
+    .attr("fill", "none")
+    .attr("stroke-opacity", 0.5)
+  .selectAll("g")
+  .data(links)
+  .join("g")
+    .style("mix-blend-mode", "multiply");
+
+const gradient = link.append("linearGradient")
+    .attr("id", d => (d.uid = `link-${Math.random().toString(36).substr(2, 9)}`))
+    .attr("gradientUnits", "userSpaceOnUse")
+    .attr("x1", d => d.source.x1)
+    .attr("x2", d => d.target.x0);
+
+gradient.append("stop")
+    .attr("offset", "0%")
+    .attr("stop-color", d => color(d.source.name));
+
+gradient.append("stop")
+    .attr("offset", "100%")
+    .attr("stop-color", d => color(d.target.name));
+
+link.append("path")
+    .attr("d", d3.sankeyLinkHorizontal())
+    .attr("stroke", d => `url(#${d.uid})`)
+    .attr("stroke-width", d => Math.max(1, d.width));
+
+// Text
+svg.append("g")
+    .style("font", "10px sans-serif")
+  .selectAll("text")
+  .data(nodes)
+  .join("text")
+    .attr("x", d => d.x0 < width / 2 ? d.x1 + 6 : d.x0 - 6)
+    .attr("y", d => (d.y1 + d.y0) / 2)
+    .attr("dy", "0.35em")
+    .attr("text-anchor", d => d.x0 < width / 2 ? "start" : "end")
+    .text(d => d.name);
+"""
+    }
 }
+
 
 # Add simpler templates
 TEMPLATES['treemap'] = {

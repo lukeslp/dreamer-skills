@@ -1,108 +1,77 @@
 ---
 name: scout
-description: Quick project reconnaissance and health check via @geepers_scout - identifies issues, quick wins, and improvement opportunities.
-version: 1.0.0
+description: "Quick project reconnaissance and codebase analysis. Use when: first encountering a new codebase, onboarding to a project, generating a project overview, checking project health, identifying tech stack, or understanding architecture before making changes."
 ---
 
-# Project Scout
+# Scout
 
-You are performing a quick reconnaissance mission on the current project. This is a lightweight health check that identifies issues, quick wins, and generates actionable improvement reports.
+Rapidly analyze a codebase and produce a structured overview covering tech stack, architecture, file statistics, health indicators, and entry points. Designed for the first thing you do when encountering a new project.
 
-## When to Scout
+## Quick Start
 
-- **Mid-session checkpoints** (every 1-1.5 hours of active work)
-- **After completing a feature** - verify nothing broke
-- **When picking up unfamiliar code** - understand current state
-- **Before major changes** - assess risk areas
-- **When something feels "off"** - systematic diagnosis
-
-## Scout Mission
-
-**Launch `@geepers_scout`** with the current project context.
-
-The scout agent will:
-
-1. **Scan for Issues**
-   - Syntax errors, broken imports
-   - Missing dependencies
-   - Configuration problems
-   - Path and reference issues
-
-2. **Identify Quick Wins**
-   - Low-hanging fruit improvements
-   - Obvious fixes (<30 min effort)
-   - Documentation gaps
-   - Code cleanup opportunities
-
-3. **Review Recent Changes**
-   - Git history analysis
-   - New files and modifications
-   - Potential regressions
-
-4. **Generate Improvement Report**
-   - Prioritized recommendations
-   - Effort estimates
-   - Impact assessments
-
-## Output Location
-
-Scout generates reports in:
-- `~/geepers/reports/scout-{project}-{timestamp}.md`
-- Summary displayed in conversation
-
-## Output Format
-
-```
-🔍 SCOUT REPORT: {project}
-
-📊 Health Score: [A-F grade]
-
-🔴 Critical Issues:
-- [Issue requiring immediate attention]
-
-🟡 Warnings:
-- [Issues that should be addressed soon]
-
-⚡ Quick Wins (< 30 min):
-1. [Quick fix with high impact]
-2. [Easy improvement]
-3. [Documentation gap]
-
-📈 Improvement Opportunities:
-- [Medium-term enhancement]
-- [Architecture improvement]
-
-📁 Report saved: ~/geepers/reports/scout-{project}-{date}.md
+```bash
+bash /home/ubuntu/skills/scout/scripts/scout.sh /path/to/project
 ```
 
-## Scout vs. Full Session Start
+The script auto-detects the project type and produces a report covering languages, frameworks, infrastructure, file counts, line counts, directory structure, entry points, and health indicators.
 
-| Action | Scout | Session Start |
-|--------|-------|---------------|
-| Health check | ✅ | ✅ |
-| Git status | Quick | Detailed |
-| Service health | ❌ | ✅ |
-| Recommendations review | ❌ | ✅ |
-| Planner coordination | ❌ | ✅ |
-| Todo restoration | ❌ | ✅ |
+## What Scout Detects
 
-Use **Scout** for quick checks during work.
-Use **Session Start** when beginning a new session.
+### Languages
+Python, TypeScript, JavaScript, Rust, Go, C#, Java, Ruby, Swift — detected by file extension presence.
 
-## Key Principles
+### Frameworks
+Detected from `package.json`, `requirements.txt`, and `pyproject.toml`:
 
-1. **Fast execution** - Scout should complete in under 2 minutes
-2. **Actionable output** - Every finding has a clear next step
-3. **Non-disruptive** - Scout observes, doesn't modify
-4. **Prioritized findings** - Critical issues first
-5. **Lightweight** - Minimal agent overhead
+| Category | Frameworks Detected |
+|----------|-------------------|
+| Frontend | React, Next.js, Vue, Svelte, Tailwind |
+| Backend | Express, Fastify, Django, Flask, FastAPI |
+| Build | Vite, Webpack, TypeScript |
+| ORM | Prisma, Drizzle |
+| ML/AI | PyTorch, TensorFlow, Pandas |
 
-## Common Scout Triggers
+### Infrastructure
+Docker, GitHub Actions, GitLab CI, Vercel, Netlify, Terraform — detected from config files.
 
-- "What needs work?"
-- "Anything broken?"
-- "Quick health check"
-- "Scan for issues"
-- "What's the status?"
-- "Any quick wins?"
-- After completing a task: "Did I break anything?"
+### Health Indicators
+
+| Indicator | Good | Warning | Missing |
+|-----------|------|---------|---------|
+| README | 20+ lines | Under 20 lines | No file |
+| LICENSE | Present | — | No file |
+| Tests | Test files found | — | No test files |
+| CI/CD | Workflow configured | — | No CI config |
+| .gitignore | Present | — | No file |
+| .env files | None in repo | Found in repo | — |
+| Git activity | Recent commits | — | Not a git repo |
+
+## Workflow
+
+### 1. Run Scout
+Execute the script against the project directory. It completes in seconds.
+
+### 2. Read the Report
+The report is printed to stdout in a structured format with labeled sections: LANGUAGES, FRAMEWORKS, INFRA, FILE_TYPES, LINE_COUNTS, ENTRY_POINTS, STRUCTURE, HEALTH.
+
+### 3. Dive Deeper
+Based on the scout report, decide what to investigate further. Common next steps:
+
+| Scout Finding | Next Action |
+|--------------|-------------|
+| No tests | Set up test framework |
+| Missing README | Use the `docs` skill to generate one |
+| .env files in repo | Add to .gitignore, rotate secrets |
+| No CI/CD | Set up GitHub Actions |
+| Large file count | Run `quality-audit` for deeper analysis |
+| Unfamiliar framework | Research with `swarm` skill |
+
+## Use with Other Skills
+
+Scout is designed as the entry point that feeds into other skills:
+
+**Scout → Docs:** Scout identifies the tech stack and structure, then the `docs` skill generates appropriate documentation.
+
+**Scout → Quality Audit:** Scout provides the overview, then `quality-audit` runs deep analysis tools on the specific areas that need attention.
+
+**Scout → Swarm:** If scout reveals unfamiliar technologies, use `swarm` to research them in parallel.
