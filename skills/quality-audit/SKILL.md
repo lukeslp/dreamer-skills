@@ -5,7 +5,7 @@ description: "Code quality auditing skill that runs real analysis tools in the s
 
 # Quality Audit
 
-Run real quality analysis tools against a codebase and produce actionable reports. Unlike guideline-only approaches, this skill installs and executes actual tools (npm audit, bandit, eslint, ruff, etc.) in the Manus sandbox and reports real findings.
+Run real quality analysis tools against a codebase and produce practical reports. Unlike guideline-only approaches, this skill installs and executes actual tools (npm audit, bandit, eslint, ruff, etc.) in the Manus sandbox and reports real findings.
 
 ## Quick Start
 
