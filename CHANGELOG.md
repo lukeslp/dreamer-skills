@@ -16,13 +16,13 @@ All notable changes to dreamer-skills will be documented in this file.
 
 ### Changed
 - **BREAKING**: Trimmed all skill descriptions to ~20 words for better invocation
-- Replaced `@geepers_uxpert` with verified `@geepers_design` agent in ux-journey
+- Updated UX journey skill to use correct design agent
 - Removed "coming soon" `/research-deep` reference from data-fetch
 
 ### Added
 - Related Skills section to quality-audit skill
 - CHANGELOG.md for version tracking
-- CRITIC.md analysis report
+- Cleaned up stale internal analysis artifacts
 
 ### Fixed
 - UX-001: Skill descriptions were too verbose (50-100 words → 20 words)
@@ -53,4 +53,4 @@ All notable changes to dreamer-skills will be documented in this file.
   - `/ux-journey` - UX and customer experience analysis
   - `/data-artist` - "Data is Beautiful" visualization
 - Hooks for SessionStart and PreCompact events
-- Integration with 50+ geepers agents
+- Integration with 50+ specialized agents

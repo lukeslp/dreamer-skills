@@ -1,10 +1,14 @@
 # Dreamer Skills
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Custom Claude Code skills for development workflows.
 
 ## Installation
 
-Install via Claude Code plugin system.
+```
+/plugin add lukeslp/dreamer-skills
+```
 
 ## Available Skills
 
